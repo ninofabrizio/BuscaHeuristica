@@ -17,7 +17,7 @@ import javax.swing.JPanel;
 import javax.swing.filechooser.FileFilter;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
-import mainStuff.Region;
+import mapInfo.Region;
 
 public class windowMaker extends JFrame {
 
@@ -30,6 +30,7 @@ public class windowMaker extends JFrame {
 	private JFrame optionFrame;
 	private JPanel optionPanel;
 	private JButton chooseMap;
+	private JButton defaultMap;
 	
 	private Region region;
 	
@@ -57,14 +58,18 @@ public class windowMaker extends JFrame {
 		optionFrame = new JFrame();
 		optionPanel = new JPanel();
 		int oFrameWidth = 300;
-		int oFrameHeight = 100;
+		int oFrameHeight = 65;
 		int xPos = (screenWidth - oFrameWidth)/2;
 		int yPos = (screenHeight - oFrameHeight)/2;	
+		
 		optionFrame.setBounds(xPos, yPos, oFrameWidth,oFrameHeight);
 		optionFrame.getContentPane().add(optionPanel);
 		
-		chooseMap = new JButton("Click here to search");
-		optionPanel.add(chooseMap, BorderLayout.CENTER);
+		defaultMap = new JButton("LOAD DEFAULT MAP");
+		optionPanel.add(defaultMap, BorderLayout.WEST);
+		chooseMap = new JButton("SEARCH A MAP");
+		optionPanel.add(chooseMap, BorderLayout.EAST);
+		
 		optionFrame.setResizable(false);
 		optionFrame.setTitle("Choose a map");
 		optionFrame.setDefaultCloseOperation(EXIT_ON_CLOSE);
@@ -75,6 +80,16 @@ public class windowMaker extends JFrame {
 			public void actionPerformed(ActionEvent e) { 
 				choosingMap();
 				optionFrame.setVisible(false);
+				setMap();
+			}
+		});
+		
+		defaultMap.addActionListener(new ActionListener() {
+			
+			public void actionPerformed(ActionEvent e) { 
+				loadDefaultMap();
+				optionFrame.setVisible(false);
+				setMap();
 			}
 		});
 	}
@@ -115,16 +130,48 @@ public class windowMaker extends JFrame {
 					System.out.println(e.getMessage());
 				}
 			}
+			else {
+				
+				System.exit(1);
+			}
 		}
 		else {
 			
 			System.exit(1);
 		}
-		
-		optionFrame.setVisible(false);
-		setMap();
 	}
 
+	private void loadDefaultMap() {
+		
+		File file;
+		FileReader fr = null;
+		
+		// Para carregar fileuivo de caracteres
+		BufferedReader br = null;
+		
+		file = new File("Maps/IA_2016.2_Trabalho_1_Mapa.txt");
+		
+		if (file.canRead() && file.exists()) {
+			try {
+
+				// Passando o fileuivo para o FileReader, foi necessario para poder usar no BufferedReader...
+				fr = new FileReader(file);
+
+				br = new BufferedReader(fr);
+				region.loading(br);
+				br.close();
+			} 
+			catch (IOException e) {
+
+				System.out.println(e.getMessage());
+			}
+		}
+		else {
+			
+			System.exit(1);
+		}
+	}
+	
 	private void setMap() {
 		
 		int xPos = (screenWidth - DEFAULT_WIDTH)/2;
