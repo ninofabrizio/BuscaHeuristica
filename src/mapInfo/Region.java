@@ -7,8 +7,8 @@ import java.awt.geom.Rectangle2D;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.List;
-import java.util.Vector;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.swing.JPanel;
 
@@ -18,6 +18,8 @@ public class Region extends JPanel {
 	
 	private ArrayList<Integer> wolfZones = new ArrayList<Integer>();
 	
+	private static Map<Character, Integer> zonesCosts = new HashMap<Character, Integer>();
+	
 	private int zoneWidth;
 	private int zoneHeight;
 	
@@ -25,6 +27,10 @@ public class Region extends JPanel {
 		
 		zoneWidth = w;
 		zoneHeight = h;
+		
+		zonesCosts.put('D', 200);
+		zonesCosts.put('.', 1);
+		zonesCosts.put('G', 5);
 		
 		// Remember that it follows order (i.e., index 0 is 150, 1 is 140 and so on...)
 		wolfZones.add(150);
