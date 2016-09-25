@@ -15,8 +15,9 @@ import javax.swing.JPanel;
 public class Region extends JPanel {
 
 	private Zone zone[][] = new Zone[41][41];
+	public Zone littleRedZone;
 	
-	private ArrayList<Integer> wolfZones = new ArrayList<Integer>();
+	private static ArrayList<Integer> wolfZones = new ArrayList<Integer>();
 	
 	private static Map<Character, Integer> zonesCosts = new HashMap<Character, Integer>();
 	
@@ -32,7 +33,8 @@ public class Region extends JPanel {
 		zonesCosts.put('.', 1);
 		zonesCosts.put('G', 5);
 		
-		// Remember that it follows order (i.e., index 0 is 150, 1 is 140 and so on...)
+		// Remember that it follows order (i.e., index 0 is the exact first entry, 1 is second and so on...)
+		// It's also the order of the wolf zones by encounter
 		wolfZones.add(150);
 		wolfZones.add(140);
 		wolfZones.add(130);
@@ -63,11 +65,14 @@ public class Region extends JPanel {
 				if(line[j] == 'I') {
 					
 					zone[i][j].setLittleRed(LittleRedRidingHood.getLittleRed(i, j));
+					littleRedZone = zone[i][j];
 				}
 				else
 					zone[i][j].setLittleRed(null);
 			}
 		}
+		
+		littleRedZone.getLittleRed().manageWolfZone();
 		
 /*TEST	for(int i = 0; i < 41; i++) {
 			for(int j = 0; j < 41 ; j++) {
@@ -75,6 +80,11 @@ public class Region extends JPanel {
 			}
 			System.out.println();
 		}*/
+	}
+	
+	public static int getWolfZoneDifficulty(int zone) {
+		
+		return wolfZones.get(zone);
 	}
 	
 	public void paintComponent(Graphics g) {

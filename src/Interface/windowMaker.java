@@ -58,19 +58,20 @@ public class windowMaker extends JFrame {
 		optionFrame = new JFrame();
 		optionPanel = new JPanel();
 		int oFrameWidth = 300;
-		int oFrameHeight = 65;
+		int oFrameHeight = 100;
 		int xPos = (screenWidth - oFrameWidth)/2;
 		int yPos = (screenHeight - oFrameHeight)/2;	
 		
 		optionFrame.setBounds(xPos, yPos, oFrameWidth,oFrameHeight);
 		optionFrame.getContentPane().add(optionPanel);
 		
+		optionPanel.setLayout(new BorderLayout());
 		defaultMap = new JButton("LOAD DEFAULT MAP");
-		optionPanel.add(defaultMap, BorderLayout.WEST);
+		optionPanel.add(defaultMap, BorderLayout.NORTH);
 		chooseMap = new JButton("SEARCH A MAP");
-		optionPanel.add(chooseMap, BorderLayout.EAST);
+		optionPanel.add(chooseMap, BorderLayout.SOUTH);
 		
-		optionFrame.setResizable(false);
+		optionFrame.setResizable(true);
 		optionFrame.setTitle("Choose a map");
 		optionFrame.setDefaultCloseOperation(EXIT_ON_CLOSE);
 		optionFrame.setVisible(true);
@@ -177,12 +178,12 @@ public class windowMaker extends JFrame {
 		int xPos = (screenWidth - DEFAULT_WIDTH)/2;
 		int yPos = (screenHeight - DEFAULT_HEIGHT)/2;
 		
-		setBounds(xPos, yPos, DEFAULT_WIDTH,DEFAULT_HEIGHT);
-		setResizable(false);
+		setBounds(xPos, yPos, DEFAULT_WIDTH, DEFAULT_HEIGHT);
+		setResizable(true);
 		setTitle("Little Red Riding Hood's Adventure");
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
 		getContentPane().add(region);
 		
-		setVisible(true);
+		setVisible(false);
 	}
 }
