@@ -5,7 +5,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Set;
 
 public class LittleRedRidingHood {
 
@@ -134,33 +133,47 @@ public class LittleRedRidingHood {
 	public void manageWolfZone() {
 		
 		int zoneDifficulty, timeSavedCalculated, j;
-		double sum = 0;
+		double sum;
 		j = 0;
 		
 		for(int i = 0; i < 10; i++) {
 		
+			sum = 0;
+			
 			zoneDifficulty = Region.getWolfZoneDifficulty(wolfZonesWalked);
 			timeSavedCalculated = zoneDifficulty;
 			
 			Map<String, Integer> candiesUsed = new HashMap<String, Integer>();
 			
-			candiesUsed.put("Torta de Amoras", candyQuantity.get("Torta de Amoras"));
-			candiesUsed.put("Cupcakes de Marshmallow", candyQuantity.get("Cupcakes de Marshmallow"));
-			candiesUsed.put("Bolo de Chocolate", candyQuantity.get("Bolo de Chocolate"));
-			candiesUsed.put("Brigadeiro", candyQuantity.get("Brigadeiro"));
-			candiesUsed.put("Doce de Coco", candyQuantity.get("Doce de Coco"));
-			
-			/*while(((double)(zoneDifficulty) * (0.2 - ((double)(wolfZonesWalked) * 0.01))) < timeSavedCalculated) {
+			Iterator<Entry<String, Integer>> cqIterator = candyQuantity.entrySet().iterator();
+			while(cqIterator.hasNext()){
 				
-				if(candiesUsed.get(candyValueOrder.get(j)) > 0) {
-					sum += candyKinds.get(candiesUsed.get(candyValueOrder.get(j)));
+				Entry<String, Integer> entry = cqIterator.next();
+				candiesUsed.put(entry.getKey(), entry.getValue());
+			}
+			
+			// Here we consider a percentage that gets  a bit lower for each wolf zone walked
+			// Looks like 40% is the best candidate for this case
+			while((zoneDifficulty * (0.4 - ((double)(wolfZonesWalked) * 0.01))) < timeSavedCalculated) {
+				
+				if(((j < 4) && (candiesUsed.get(candyValueOrder.get(j)) > 0)) || ((j == 4) && (candiesUsed.get(candyValueOrder.get(j)) > 1))) {
+					sum += candyKinds.get(candyValueOrder.get(j));
 					candiesUsed.replace(candyValueOrder.get(j), candiesUsed.get(candyValueOrder.get(j)) - 1);
 				}
-				else
+				else if(j == 4 && (candiesUsed.get(candyValueOrder.get(j)) == 1))
+					break;
+				else if(j < 5)
 					j++;
 				
 				timeSavedCalculated = (int)(zoneDifficulty / sum);
-			}*/
+			}
+			
+			cqIterator = candiesUsed.entrySet().iterator();
+			while(cqIterator.hasNext()){
+				
+				Entry<String, Integer> entry = cqIterator.next();
+				candyQuantity.replace(entry.getKey(), entry.getValue());
+			}
 			
 			totalTime += timeSavedCalculated;
 			
@@ -172,7 +185,7 @@ public class LittleRedRidingHood {
 			
 			System.out.println("Time = " + totalTime + "\n");
 			
-			Iterator<Entry<String, Integer>> cqIterator = candyQuantity.entrySet().iterator();
+			cqIterator = candyQuantity.entrySet().iterator();
 			while(cqIterator.hasNext()){
 				
 				Entry<String, Integer> entry = cqIterator.next();
