@@ -134,6 +134,7 @@ public class LittleRedRidingHood {
 		
 		int zoneDifficulty, timeSavedCalculated, j;
 		double sum;
+		double goal;
 		j = 0;
 		
 		for(int i = 0; i < 10; i++) {
@@ -141,6 +142,7 @@ public class LittleRedRidingHood {
 			sum = 0;
 			
 			zoneDifficulty = Region.getWolfZoneDifficulty(wolfZonesWalked);
+			goal = (zoneDifficulty * (0.4 - ((double)(wolfZonesWalked) * 0.01)));
 			timeSavedCalculated = zoneDifficulty;
 			
 			Map<String, Integer> candiesUsed = new HashMap<String, Integer>();
@@ -154,7 +156,7 @@ public class LittleRedRidingHood {
 			
 			// Here we consider a percentage that gets  a bit lower for each wolf zone walked
 			// Looks like 40% is the best candidate for this case
-			while((zoneDifficulty * (0.4 - ((double)(wolfZonesWalked) * 0.01))) < timeSavedCalculated) {
+			while(goal < timeSavedCalculated) {
 				
 				if(((j < 4) && (candiesUsed.get(candyValueOrder.get(j)) > 0)) || ((j == 4) && (candiesUsed.get(candyValueOrder.get(j)) > 1))) {
 					sum += candyKinds.get(candyValueOrder.get(j));
@@ -184,6 +186,7 @@ public class LittleRedRidingHood {
 			System.out.println("Difficulty: " + zoneDifficulty);
 			
 			System.out.println("Time = " + totalTime + "\n");
+			System.out.println("Residue(time saved - goal) = " + (timeSavedCalculated - goal) + "\n");
 			
 			cqIterator = candyQuantity.entrySet().iterator();
 			while(cqIterator.hasNext()){

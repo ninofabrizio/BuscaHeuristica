@@ -72,9 +72,10 @@ public class Region extends JPanel {
 			}
 		}
 		
-		littleRedZone.getLittleRed().manageWolfZone();
+		// TODO Tests
+		//littleRedZone.getLittleRed().manageWolfZone();
 		
-/*TEST	for(int i = 0; i < 41; i++) {
+	/*	for(int i = 0; i < 41; i++) {
 			for(int j = 0; j < 41 ; j++) {
 				System.out.print(zone[i][j].getType());
 			}

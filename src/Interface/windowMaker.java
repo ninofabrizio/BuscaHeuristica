@@ -14,6 +14,7 @@ import javax.swing.JButton;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
+import javax.swing.JTextArea;
 import javax.swing.filechooser.FileFilter;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
@@ -29,18 +30,24 @@ public class windowMaker extends JFrame {
 	
 	private JFrame optionFrame;
 	private JPanel optionPanel;
+	private JPanel infoPanel;
 	private JButton chooseMap;
 	private JButton defaultMap;
+	private JButton startWalk;
 	
 	private Region region;
 	
 	public windowMaker(int w, int h) {
 		
-		DEFAULT_WIDTH = (w * 41) + (w/2);
+		DEFAULT_WIDTH = (w * 41) + (w/2) + 200;
 		DEFAULT_HEIGHT = (h * 41) + (2*h);
 		region = new Region(w, h);
 		
 		getScreenDimensions();
+		
+		infoPanel = new JPanel();
+		infoPanel.setLayout(new BorderLayout());
+		infoPanel.setBounds((w * 41), 0, 200, (h * 41) - (2 * h));
 		
 		setMenu();
 	}
@@ -182,8 +189,28 @@ public class windowMaker extends JFrame {
 		setResizable(true);
 		setTitle("Little Red Riding Hood's Adventure");
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
+		
+		startWalk = new JButton("START WALKING");
+		infoPanel.add(startWalk, BorderLayout.PAGE_END);
+		
+		startWalk.addActionListener(new ActionListener() {
+			
+			public void actionPerformed(ActionEvent e) { 
+				// TODO Here enters the path method calling
+			}
+		});
+		
+		JTextArea ta = new JTextArea();
+		ta.setBounds(50, 0, 300, 300);
+		ta.setLineWrap(true);
+		ta.setWrapStyleWord(true);
+		ta.setEditable(false);
+		ta.setText("Here we will put all the info:\n-Candies with quantity\n-Total time");
+		infoPanel.add(ta);
+		
+		getContentPane().add(infoPanel);
 		getContentPane().add(region);
 		
-		setVisible(false);
+		setVisible(true);
 	}
 }

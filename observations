@@ -11,6 +11,10 @@ Ideias:
 - Quando completar o percurso, mostrar de novo o frame contendo os botões para abrir um mapa e deixar o frame
 de desenho à mostra com as informações do percurso feito para ver como se saiu.
 
+- Fazer com que o método das clareiras tente economizar doces (se o tempo calculado é menor que a meta, colocar
+o último doce colocado na soma de volta e tentar com um doce menor que este). Pode se usar um critério de
+aceitação pra diferença entre a meta e o tempo calculado (0.5 por exemplo).
+
 Extra:
 
 - Trocar retângulos por imagens para a parte visual
