@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Random;
 
 public class LittleRedRidingHood {
 
@@ -132,14 +133,17 @@ public class LittleRedRidingHood {
 	// For now, it sees them all in a loop (take the loop part out after)
 	public void manageWolfZone() {
 		
-		int zoneDifficulty, timeSavedCalculated, j;
-		double sum;
+		int zoneDifficulty, j, totalCandy = 0;
+		double sum, timeSavedCalculated;
 		double goal;
-		j = 0;
+		//Random rand = new Random();
+		
 		
 		for(int i = 0; i < 10; i++) {
 		
+			j = 0;
 			sum = 0;
+			double diff = 0;
 			
 			zoneDifficulty = Region.getWolfZoneDifficulty(wolfZonesWalked);
 			goal = (zoneDifficulty * (0.4 - ((double)(wolfZonesWalked) * 0.01)));
@@ -152,22 +156,52 @@ public class LittleRedRidingHood {
 				
 				Entry<String, Integer> entry = cqIterator.next();
 				candiesUsed.put(entry.getKey(), entry.getValue());
+				totalCandy += entry.getValue();
 			}
 			
 			// Here we consider a percentage that gets  a bit lower for each wolf zone walked
 			// Looks like 40% is the best candidate for this case
 			while(goal < timeSavedCalculated) {
+
+				if(totalCandy == 1)
+					break;
 				
-				if(((j < 4) && (candiesUsed.get(candyValueOrder.get(j)) > 0)) || ((j == 4) && (candiesUsed.get(candyValueOrder.get(j)) > 1))) {
+				if(candiesUsed.get(candyValueOrder.get(j)) == 0 && (j < 5))
+					j++;
+				else if(candiesUsed.get(candyValueOrder.get(j)) == 0 && (j == 4))
+					j = 0;
+				
+				if( candiesUsed.get(candyValueOrder.get(j)) > 0 ) {
 					sum += candyKinds.get(candyValueOrder.get(j));
 					candiesUsed.replace(candyValueOrder.get(j), candiesUsed.get(candyValueOrder.get(j)) - 1);
-				}
-				else if(j == 4 && (candiesUsed.get(candyValueOrder.get(j)) == 1))
-					break;
-				else if(j < 5)
 					j++;
+					totalCandy--;
+				}
 				
-				timeSavedCalculated = (int)(zoneDifficulty / sum);
+				if(j > 4)
+					j = 0;
+				
+				timeSavedCalculated = zoneDifficulty / sum;
+				
+				diff = timeSavedCalculated - goal;
+				
+				// Candy saving part (residue)
+				/*if(Double.doubleToRawLongBits(diff) < 0) {
+					
+					if(j == 0)
+						j = 4;
+					else
+						j--;
+					
+					sum -= candyKinds.get(candyValueOrder.get(j));
+					candiesUsed.replace(candyValueOrder.get(j), candiesUsed.get(candyValueOrder.get(j)) + 1);
+
+					totalCandy++;
+					
+					timeSavedCalculated = zoneDifficulty / sum;
+					
+					//j = rand.nextInt(4 - 0);
+				}*/
 			}
 			
 			cqIterator = candiesUsed.entrySet().iterator();
@@ -177,6 +211,7 @@ public class LittleRedRidingHood {
 				candyQuantity.replace(entry.getKey(), entry.getValue());
 			}
 			
+			totalCandy = 0;
 			totalTime += timeSavedCalculated;
 			
 			wolfZonesWalked++;
@@ -186,7 +221,7 @@ public class LittleRedRidingHood {
 			System.out.println("Difficulty: " + zoneDifficulty);
 			
 			System.out.println("Time = " + totalTime + "\n");
-			System.out.println("Residue(time saved - goal) = " + (timeSavedCalculated - goal) + "\n");
+			System.out.println("Residue(time saved - goal) = " + diff + "\n");
 			
 			cqIterator = candyQuantity.entrySet().iterator();
 			while(cqIterator.hasNext()){

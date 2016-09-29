@@ -211,6 +211,6 @@ public class windowMaker extends JFrame {
 		getContentPane().add(infoPanel);
 		getContentPane().add(region);
 		
-		setVisible(true);
+		setVisible(false);
 	}
 }

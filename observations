@@ -2,11 +2,9 @@ A fazer:
 
 - Mostrar painel com doces disponíveis, tempo da zona atravessada no momento e tempo total decorrido
 - Algoritmo de busca com A*
-- Algoritmo de districuição de doces em clareiras
+- Algoritmo de districuição de doces em clareiras (sem ser linear)
 
 Ideias:
-
-- Montar um botão para acionar o algoritmo de busca no mesmo painel de informações.
 
 - Quando completar o percurso, mostrar de novo o frame contendo os botões para abrir um mapa e deixar o frame
 de desenho à mostra com as informações do percurso feito para ver como se saiu.
