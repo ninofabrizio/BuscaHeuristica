@@ -5,8 +5,8 @@ public class Zone {
 	private char type;
 	private LittleRedRidingHood lrrh;
 	
-    int cost = -1; // G
-    int finalCost = -1; // G + H
+    double cost = -1.0; // G
+    double finalCost = -1.0; // G + H
     Zone parent;
     int i, j;
     
@@ -14,10 +14,10 @@ public class Zone {
 	public int getJ() { return j; }
 	public void setI(int i) { this.i = i; }
 	public void setJ(int j) { this.j = j; }
-    public void setCost(int hc) { cost = hc; } 
-    public void setFinalCost(int fc) { finalCost = fc; } 
-	public int getCost() {	return cost; } 
-	public int getFinalCost() { return finalCost; }
+    public void setCost(double hc) { cost = hc; } 
+    public void setFinalCost(double fc) { finalCost = fc; } 
+	public double getCost() {	return cost; } 
+	public double getFinalCost() { return finalCost; }
 	public void setParent(Zone p) { parent = p; }
     public Zone getParent() { return parent; }	
     

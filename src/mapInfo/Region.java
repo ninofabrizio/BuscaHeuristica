@@ -17,9 +17,9 @@ public class Region extends JPanel {
 	private static Zone zone[][] = new Zone[41][41];
 	public Zone littleRedZone;
 	
-	private static ArrayList<Integer> wolfZones = new ArrayList<Integer>();
+	private static ArrayList<Double> wolfZones = new ArrayList<Double>();
 	
-	public static Map<Character, Integer> zonesCosts = new HashMap<Character, Integer>();
+	public static Map<Character, Double> zonesCosts = new HashMap<Character, Double>();
 	
 	private int zoneWidth;
 	private int zoneHeight;
@@ -29,26 +29,26 @@ public class Region extends JPanel {
 		zoneWidth = w;
 		zoneHeight = h;
 		
-		zonesCosts.put('D', 200);
-		zonesCosts.put('.', 1);
-		zonesCosts.put('G', 5);
-		zonesCosts.put('I', 0);
-		zonesCosts.put('F', 0);
-		zonesCosts.put('C', 0);
+		zonesCosts.put('D', 200.0);
+		zonesCosts.put('.', 1.0);
+		zonesCosts.put('G', 5.0);
+		zonesCosts.put('I', 0.0);
+		zonesCosts.put('F', 0.0);
+		zonesCosts.put('C', 0.0);
 		
 		
 		// Remember that it follows order (i.e., index 0 is the exact first entry, 1 is second and so on...)
 		// It's also the order of the wolf zones by encounter
-		wolfZones.add(150);
-		wolfZones.add(140);
-		wolfZones.add(130);
-		wolfZones.add(120);
-		wolfZones.add(110);
-		wolfZones.add(100);
-		wolfZones.add(95);
-		wolfZones.add(90);
-		wolfZones.add(85);
-		wolfZones.add(80);
+		wolfZones.add(150.0);
+		wolfZones.add(140.0);
+		wolfZones.add(130.0);
+		wolfZones.add(120.0);
+		wolfZones.add(110.0);
+		wolfZones.add(100.0);
+		wolfZones.add(95.0);
+		wolfZones.add(90.0);
+		wolfZones.add(85.0);
+		wolfZones.add(80.0);
 	}
 	
 	public void loading(BufferedReader br) throws IOException {
@@ -78,20 +78,17 @@ public class Region extends JPanel {
 			}
 		}
 		
-		// TODO Tests
 		littleRedZone.getLittleRed().manageWolfZone();
-		
-	/*	for(int i = 0; i < 41; i++) {
-			for(int j = 0; j < 41 ; j++) {
-				System.out.print(zone[i][j].getType());
-			}
-			System.out.println();
-		}*/
 	}
 	
-	public static int getWolfZoneDifficulty(int zone) {
+	public static double getWolfZoneDifficulty(int zone) {
 		
 		return wolfZones.get(zone);
+	}
+	
+	public static void setWolfZoneDifficulty(int zone, double newTime) {
+		
+		wolfZones.set(zone, newTime);
 	}
 	
 	public void paintComponent(Graphics g) {
@@ -150,7 +147,7 @@ public class Region extends JPanel {
 	}
 
 	
-	public static Map<Character, Integer> getZonesCosts() {
+	public static Map<Character, Double> getZonesCosts() {
 		
 		return zonesCosts;		
 	}

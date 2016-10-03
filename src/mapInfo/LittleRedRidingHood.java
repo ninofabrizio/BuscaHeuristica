@@ -1,5 +1,8 @@
 package mapInfo;
 
+import genetic.CandyCombinations;
+import genetic.GeneticAlgorithm;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -12,6 +15,7 @@ import java.util.concurrent.PriorityBlockingQueue;
 import java.util.concurrent.locks.ReentrantLock;
 
 import static java.lang.Math.abs;
+
 import java.util.Comparator;
 
 
@@ -19,7 +23,7 @@ public class LittleRedRidingHood {
 
 	private static LittleRedRidingHood lrrh = null;
 	
-	private int totalTime;
+	private double totalTime;
 	private int wolfZonesWalked;
 	
 	// Index position based in the Zone matrix
@@ -28,10 +32,9 @@ public class LittleRedRidingHood {
 	
 	private static Map<String, Double> candyKinds = new HashMap<String, Double>();
 	private static Map<String, Integer> candyQuantity = new HashMap<String, Integer>();
-	private static ArrayList<String> candyValueOrder = new ArrayList<String>();
 	
 	private static Zone grid[][] = Region.getZones();
-	private static Map<Character, Integer>mapCosts = Region.getZonesCosts();	
+	private static Map<Character, Double>mapCosts = Region.getZonesCosts();	
 
 	static LinkedList<Zone> frontier = new LinkedList<Zone>();
 	
@@ -59,51 +62,18 @@ public class LittleRedRidingHood {
 		candyQuantity.put("Bolo de Chocolate", 5);
 		candyQuantity.put("Brigadeiro", 5);
 		candyQuantity.put("Doce de Coco", 5);
+	}
+
+	public static Map<String, Double> getCandyKinds() {
 		
-		setCandyOrder();
+		return candyKinds;
 	}
 	
-	// This method is ugly, but works...try to make it better
-	private void setCandyOrder() {
+	public static Map<String, Integer> getCandyQuantities() {
 		
-		int i = 0;
-		Map<String, Double> temp = new HashMap<String, Double>();
-		Entry<String, Double> entry;
-		
-		Iterator<Entry<String, Double>> ckIterator = candyKinds.entrySet().iterator();
-		while(ckIterator.hasNext()){
-			
-			entry = ckIterator.next();
-			temp.put(entry.getKey(), entry.getValue());
-		}
-		
-		for(i = 0; i < candyKinds.size(); i++) {
-			
-			String candy;
-			Iterator<Entry<String, Double>> tempIterator = temp.entrySet().iterator();
-			entry = tempIterator.next();
-			candy = entry.getKey();
-			
-			if(tempIterator.hasNext()) {
-				entry = tempIterator.next();
-			
-				if(!tempIterator.hasNext() && (entry.getValue() > temp.get(candy)))
-					candy = entry.getKey();
-			}
-				
-			while(tempIterator.hasNext()){
-
-				if(entry.getValue() > temp.get(candy))
-					candy = entry.getKey();
-				
-				entry = tempIterator.next();
-			}
-			
-			candyValueOrder.add(candy);
-			temp.remove(candy);
-		}
+		return candyQuantity;
 	}
-
+	
 	public static LittleRedRidingHood getLittleRed(int x, int y) {
 		
 		if (lrrh == null)
@@ -111,14 +81,9 @@ public class LittleRedRidingHood {
 		return lrrh;
 	}
 	
-	public int getTime() {
+	public double getTime() {
 		
 		return totalTime;
-	}
-	
-	public void addTime(int t) {
-		
-		totalTime += t;
 	}
 	
 	public int getWolfZones() {
@@ -146,61 +111,31 @@ public class LittleRedRidingHood {
 		yPos = y;
 	}
 
-	// TODO This method should work for THE zone she's standing (It's called by the path method)
-	// For now, it sees them all in a loop (take the loop part out after)
+	// Method that calculates new times for wolf zones, uses genetic algorithm to generate random
+	// combinations and see which are more fit in a poplation of combinations
 	public void manageWolfZone() {
 		
-		int zoneDifficulty, j, totalCandy = 0;
-		double sum, timeSavedCalculated;
-		double goal;
-		//Random rand = new Random();
-		
+		double timeSavedCalculated, zoneDifficulty, goal;
+		int generation;
 		
 		for(int i = 0; i < 10; i++) {
 		
-			j = 0;
-			sum = 0;
 			double diff = 0;
+			generation = 0;
 			
 			zoneDifficulty = Region.getWolfZoneDifficulty(wolfZonesWalked);
-			goal = (zoneDifficulty * (0.4 - ((double)(wolfZonesWalked) * 0.01)));
-			timeSavedCalculated = zoneDifficulty;
+			goal = (zoneDifficulty * (0.4 - ((double)wolfZonesWalked * 0.01)));
 			
-			Map<String, Integer> candiesUsed = new HashMap<String, Integer>();
+	        CandyCombinations combs = new CandyCombinations(50, true);
 			
 			Iterator<Entry<String, Integer>> cqIterator = candyQuantity.entrySet().iterator();
-			while(cqIterator.hasNext()){
-				
-				Entry<String, Integer> entry = cqIterator.next();
-				candiesUsed.put(entry.getKey(), entry.getValue());
-				totalCandy += entry.getValue();
-			}
 			
 			// Here we consider a percentage that gets  a bit lower for each wolf zone walked
 			// Looks like 40% is the best candidate for this case
-			while(goal < timeSavedCalculated) {
+			while(combs.getFittest().getFitness() > goal) {
 
-				if(totalCandy == 1)
-					break;
-				
-				if(candiesUsed.get(candyValueOrder.get(j)) == 0 && (j < 5))
-					j++;
-				else if(candiesUsed.get(candyValueOrder.get(j)) == 0 && (j == 4))
-					j = 0;
-				
-				if( candiesUsed.get(candyValueOrder.get(j)) > 0 ) {
-					sum += candyKinds.get(candyValueOrder.get(j));
-					candiesUsed.replace(candyValueOrder.get(j), candiesUsed.get(candyValueOrder.get(j)) - 1);
-					j++;
-					totalCandy--;
-				}
-				
-				if(j > 4)
-					j = 0;
-				
-				timeSavedCalculated = zoneDifficulty / sum;
-				
-				diff = timeSavedCalculated - goal;
+				combs = GeneticAlgorithm.evolveCombinations(combs);
+				generation++;
 				
 				// Candy saving part (residue)
 				/*if(Double.doubleToRawLongBits(diff) < 0) {
@@ -217,43 +152,55 @@ public class LittleRedRidingHood {
 					
 					timeSavedCalculated = zoneDifficulty / sum;
 					
-					//j = rand.nextInt(4 - 0);
 				}*/
-			}
-			
-			cqIterator = candiesUsed.entrySet().iterator();
-			while(cqIterator.hasNext()){
 				
-				Entry<String, Integer> entry = cqIterator.next();
-				candyQuantity.replace(entry.getKey(), entry.getValue());
 			}
 			
-			totalCandy = 0;
+			timeSavedCalculated = zoneDifficulty / combs.getFittest().getFitness();
 			totalTime += timeSavedCalculated;
+			
+			diff = timeSavedCalculated - goal;
+			
+			Region.setWolfZoneDifficulty(wolfZonesWalked, timeSavedCalculated);
 			
 			wolfZonesWalked++;
 			
 			// TODO Test showing part, take it out after
-			System.out.println("Zone: " + (i + 1));
+			System.out.println("\nZone: " + (i + 1));
 			System.out.println("Difficulty: " + zoneDifficulty);
 			
-			System.out.println("Time = " + totalTime + "\n");
+			System.out.println("New time = " + timeSavedCalculated + "\nTotal = " + totalTime + "\n");
 			System.out.println("Residue(time saved - goal) = " + diff + "\n");
 			
+			ArrayList<String> list = combs.getFittest().getCandies();
+			
+			for(int j = 0; j < combs.getCombinationsSize(); j++)
+				if(combs.getFittest().equals(combs.getCombination(j))) {
+					System.out.println("Generation " + generation + "\nFittest position " + j);
+					break;
+				}
+			
+			System.out.println("\nCandies used:");
+			
+			for(int j = 0; j < list.size(); j++) {
+				candyQuantity.replace(list.get(j), candyQuantity.get(list.get(j)) - 1);
+				System.out.println(list.get(j));
+			}
+			
+			System.out.println();
 			cqIterator = candyQuantity.entrySet().iterator();
 			while(cqIterator.hasNext()){
 				
 				Entry<String, Integer> entry = cqIterator.next();
 				System.out.println(entry.getKey() + " = " + entry.getValue());
 			}
-				
 			System.out.println("\n\n");
-	
 		}
-	
+		
+		wolfZonesWalked = 0;
+		
 		AStar();
-			
-}
+	}
     	
 
 	
@@ -279,7 +226,7 @@ public class LittleRedRidingHood {
     	    }
     }
     
-    public static int heuristic( Zone x ) {
+    public static double heuristic( Zone x ) {
     	
     	return abs( x.getI() - endI ) + abs( x.getJ() - endJ );  	    	
     }
@@ -373,11 +320,11 @@ public class LittleRedRidingHood {
 						
 			for (Zone next : neighbors) {
 						
-				int new_cost = cost_so_far.get(cost_so_far.indexOf(current)).getCost() + mapCosts.get(next.getType());
+				double new_cost = cost_so_far.get(cost_so_far.indexOf(current)).getCost() + mapCosts.get(next.getType());
 						
 				if ( !cost_so_far.contains(next) || new_cost <  cost_so_far.get(cost_so_far.lastIndexOf(next)).getCost() ) {
 					
-					int priority = new_cost + heuristic(next);
+					double priority = new_cost + heuristic(next);
 					
 					next.setCost(new_cost);
 					cost_so_far.add(next);
