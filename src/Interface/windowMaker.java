@@ -196,7 +196,7 @@ public class windowMaker extends JFrame {
 		startWalk.addActionListener(new ActionListener() {
 			
 			public void actionPerformed(ActionEvent e) { 
-				// TODO Here enters the path method calling
+				//region.activateAStar();
 			}
 		});
 		

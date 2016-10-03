@@ -70,7 +70,7 @@ public class Region extends JPanel {
 				
 				if(line[j] == 'I') {
 					
-					zone[i][j].setLittleRed(LittleRedRidingHood.getLittleRed(i, j));
+					zone[i][j].setLittleRed(LittleRedRidingHood.getLittleRed(i, j, this));
 					littleRedZone = zone[i][j];
 				}
 				else
@@ -89,6 +89,11 @@ public class Region extends JPanel {
 	public static void setWolfZoneDifficulty(int zone, double newTime) {
 		
 		wolfZones.set(zone, newTime);
+	}
+	
+	public Region repaintZone() {
+		
+		return this;
 	}
 	
 	public void paintComponent(Graphics g) {
@@ -128,16 +133,16 @@ public class Region extends JPanel {
 					g2d.setPaint(Color.YELLOW);
 					g2d.fill(rt);
 				}
-				else if(zone[i][j].getType() == 'I') {
-					
-					rt = new Rectangle2D.Double(xPos, yPos, zoneWidth, zoneHeight);
-					g2d.setPaint(Color.RED);
-					g2d.fill(rt);
-				}
-				else { // Final
+				else if(zone[i][j].getType() == 'F') {
 					
 					rt = new Rectangle2D.Double(xPos, yPos, zoneWidth, zoneHeight);
 					g2d.setPaint(Color.BLUE);
+					g2d.fill(rt);
+				}
+				if(zone[i][j].getLittleRed() != null) {
+					
+					rt = new Rectangle2D.Double(xPos, yPos, zoneWidth, zoneHeight);
+					g2d.setPaint(Color.RED);
 					g2d.fill(rt);
 				}
 			}
@@ -157,6 +162,8 @@ public class Region extends JPanel {
 		return zone;
 	}
 
-	
-	
+	/*public void activateAStar() {
+		
+		littleRedZone.getLittleRed().AStar();
+	}*/
 }

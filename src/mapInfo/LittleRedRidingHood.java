@@ -22,6 +22,7 @@ import java.util.Comparator;
 public class LittleRedRidingHood {
 
 	private static LittleRedRidingHood lrrh = null;
+	private Region region;
 	
 	private double totalTime;
 	private int wolfZonesWalked;
@@ -44,10 +45,11 @@ public class LittleRedRidingHood {
 	
 	private LittleRedRidingHood() { }
 	
-	private LittleRedRidingHood(int x, int y) {
+	private LittleRedRidingHood(int x, int y, Region r) {
 		
 		xPos = x;
 		yPos = y;
+		region = r;
 		totalTime = 0;
 		wolfZonesWalked = 0;
 		
@@ -74,10 +76,11 @@ public class LittleRedRidingHood {
 		return candyQuantity;
 	}
 	
-	public static LittleRedRidingHood getLittleRed(int x, int y) {
+	public static LittleRedRidingHood getLittleRed(int x, int y, Region r) {
 		
 		if (lrrh == null)
-			lrrh = new LittleRedRidingHood(x, y);
+			lrrh = new LittleRedRidingHood(x, y, r);
+		
 		return lrrh;
 	}
 	
@@ -166,7 +169,7 @@ public class LittleRedRidingHood {
 			wolfZonesWalked++;
 			
 			// TODO Test showing part, take it out after
-			System.out.println("\nZone: " + (i + 1));
+			System.out.println("\nWolf Zone: " + (i + 1));
 			System.out.println("Difficulty: " + zoneDifficulty);
 			
 			System.out.println("New time = " + timeSavedCalculated + "\nTotal = " + totalTime + "\n");
@@ -207,7 +210,7 @@ public class LittleRedRidingHood {
 /////////////////////////////////////////////////////// ASTAR ///////////////////////////////////////////////////////////////
 	
 	
-    public static void setStartAndEndCell() {
+    public void setStartAndEndCell() {
       
     	for ( int i = 0; i < 41; ++i )     
     		for ( int j = 0; j < 41; ++j ) {
@@ -226,14 +229,14 @@ public class LittleRedRidingHood {
     	    }
     }
     
-    public static double heuristic( Zone x ) {
+    public double heuristic( Zone x ) {
     	
     	return abs( x.getI() - endI ) + abs( x.getJ() - endJ );  	    	
     }
     
     
     
-    public static ArrayList<Zone> neighbors( Zone x ) {
+    public ArrayList<Zone> neighbors( Zone x ) {
     	
     	ArrayList<Zone>neighbors = new ArrayList<Zone>();
     
@@ -254,7 +257,7 @@ public class LittleRedRidingHood {
     }
      
     
-	public static void AStar() {
+	public void AStar() {
 		
 		setStartAndEndCell();
 		
@@ -307,14 +310,15 @@ public class LittleRedRidingHood {
 						
 			} 
 			
-			System.out.println("\n\n: AAAA" + frontier.size());
+			System.out.println("\n\n: Frontier " + frontier.size());
 			
-			System.out.println("\ncurrent...." + current.getType() + "  "+ current.i + "   " + current.j);
+			System.out.println("\nCurrent Position " + current.getType() + "  "+ current.i + "   " + current.j);
 					
-			if ( current  == end ) {		
-				System.out.println("\ncurrent...." + current.getType() + "  "+ current.i + "   " + current.j);
+			if ( current  == end ) {
+				System.out.println("\nTOTAL TIME " + (current.finalCost + totalTime));
 				break;
 			}
+			
 			
 			neighbors = neighbors(current);
 						
@@ -330,16 +334,16 @@ public class LittleRedRidingHood {
 					cost_so_far.add(next);
 					next.setFinalCost(priority);
 					next.setParent(current);
-				
-					if ( next.getType() != 'D')
-						frontier.add(next);
-						
-				}					
-			}		
 			
-		}	
-		
-	}	
-
-		
+					next.setLittleRed(current.getLittleRed());
+					current.setLittleRed(null);	
+					region.repaint();
+					
+					
+					frontier.add(next);
+					
+				}					
+			}
+		}
+	}
 }
