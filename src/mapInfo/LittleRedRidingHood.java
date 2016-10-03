@@ -3,9 +3,17 @@ package mapInfo;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Random;
+import java.util.PriorityQueue;
+import java.util.Queue;
+import java.util.concurrent.PriorityBlockingQueue;
+import java.util.concurrent.locks.ReentrantLock;
+
+import static java.lang.Math.abs;
+import java.util.Comparator;
+
 
 public class LittleRedRidingHood {
 
@@ -21,6 +29,15 @@ public class LittleRedRidingHood {
 	private static Map<String, Double> candyKinds = new HashMap<String, Double>();
 	private static Map<String, Integer> candyQuantity = new HashMap<String, Integer>();
 	private static ArrayList<String> candyValueOrder = new ArrayList<String>();
+	
+	private static Zone grid[][] = Region.getZones();
+	private static Map<Character, Integer>mapCosts = Region.getZonesCosts();	
+
+	static LinkedList<Zone> frontier = new LinkedList<Zone>();
+	
+	static ArrayList<Zone> cost_so_far = new ArrayList<Zone>(); // G(N)
+	static int startI = -1, startJ;
+    static int endI = -1, endJ;
 	
 	private LittleRedRidingHood() { }
 	
@@ -229,11 +246,153 @@ public class LittleRedRidingHood {
 				Entry<String, Integer> entry = cqIterator.next();
 				System.out.println(entry.getKey() + " = " + entry.getValue());
 			}
+				
 			System.out.println("\n\n");
+	
 		}
-	}
 	
-	// TODO here enters the path method
+		AStar();
+			
+}
+    	
+
+	
+/////////////////////////////////////////////////////// ASTAR ///////////////////////////////////////////////////////////////
 	
 	
+    public static void setStartAndEndCell() {
+      
+    	for ( int i = 0; i < 41; ++i )     
+    		for ( int j = 0; j < 41; ++j ) {
+    	      
+    	    	if ( grid[i][j].getType() == 'I' ) {    
+    	    		startI = i;
+    	            startJ = j;    	
+    	    	}
+    			
+    	    	if ( grid[i][j].getType() == 'F' ) {
+    				endI = i;
+    				endJ = j;
+    			}     
+    	     
+    	    	if ( startI != -1 && endI != -1) break;	
+    	    }
+    }
+    
+    public static int heuristic( Zone x ) {
+    	
+    	return abs( x.getI() - endI ) + abs( x.getJ() - endJ );  	    	
+    }
+    
+    
+    
+    public static ArrayList<Zone> neighbors( Zone x ) {
+    	
+    	ArrayList<Zone>neighbors = new ArrayList<Zone>();
+    
+    	if (x.getJ() + 1 < 41)
+    		neighbors.add(grid[x.getI()][x.getJ() + 1]);
+    	
+    	if (x.getJ() - 1 > -1)
+    		neighbors.add(grid[x.getI()][x.getJ() - 1]);
+    	
+    	if (x.getI() + 1 < 41)
+    		neighbors.add(grid[x.getI()  + 1][x.getJ()]);
+    	
+    	if (x.getI() - 1 > -1)
+    		neighbors.add(grid[x.getI() - 1][x.getJ()]);
+    	
+    	
+    	return neighbors;   	
+    }
+     
+    
+	public static void AStar() {
+		
+		setStartAndEndCell();
+		
+		Zone start = grid[startI][startJ];
+		Zone end = grid[endI][endJ];
+		
+		Zone current = null;
+		ArrayList<Zone>neighbors;
+		
+		start.setCost(0);
+		start.setFinalCost(heuristic(start));
+		start.setParent(null);
+		
+		frontier.add(start);		
+		cost_so_far.add(start);
+			
+		while ( frontier.size() != 0 ) {
+			
+			frontier.sort(new Comparator<Zone>() {
+				   
+				@Override
+				   public int compare(Zone o1, Zone o2) {
+			        
+					if(o1.finalCost < o2.finalCost){
+			           return -1; 
+				        }
+				        if(o1.finalCost > o2.finalCost){
+				           return 1; 
+				        }
+			        return 0;
+				   }
+				}); 
+				
+			
+			while ( true ) {
+				
+				current = frontier.poll();
+				
+				if (current.getParent() != null ) {
+				
+				if ( (current.i == current.getParent().i) && ( (current.j == current.getParent().j - 1) 
+				|| ( current.j == current.getParent().j + 1 )) ) 	
+					break;
+				
+				if ( (current.j == current.getParent().j) && ((current.i == current.getParent().i - 1) 
+				|| ( current.i == current.getParent().i + 1 )) ) 	
+					break;	
+				
+				} else break;
+						
+			} 
+			
+			System.out.println("\n\n: AAAA" + frontier.size());
+			
+			System.out.println("\ncurrent...." + current.getType() + "  "+ current.i + "   " + current.j);
+					
+			if ( current  == end ) {		
+				System.out.println("\ncurrent...." + current.getType() + "  "+ current.i + "   " + current.j);
+				break;
+			}
+			
+			neighbors = neighbors(current);
+						
+			for (Zone next : neighbors) {
+						
+				int new_cost = cost_so_far.get(cost_so_far.indexOf(current)).getCost() + mapCosts.get(next.getType());
+						
+				if ( !cost_so_far.contains(next) || new_cost <  cost_so_far.get(cost_so_far.lastIndexOf(next)).getCost() ) {
+					
+					int priority = new_cost + heuristic(next);
+					
+					next.setCost(new_cost);
+					cost_so_far.add(next);
+					next.setFinalCost(priority);
+					next.setParent(current);
+				
+					if ( next.getType() != 'D')
+						frontier.add(next);
+						
+				}					
+			}		
+			
+		}	
+		
+	}	
+
+		
 }
