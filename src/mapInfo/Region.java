@@ -14,12 +14,12 @@ import javax.swing.JPanel;
 
 public class Region extends JPanel {
 
-	private Zone zone[][] = new Zone[41][41];
+	private static Zone zone[][] = new Zone[41][41];
 	public Zone littleRedZone;
 	
 	private static ArrayList<Integer> wolfZones = new ArrayList<Integer>();
 	
-	private static Map<Character, Integer> zonesCosts = new HashMap<Character, Integer>();
+	public static Map<Character, Integer> zonesCosts = new HashMap<Character, Integer>();
 	
 	private int zoneWidth;
 	private int zoneHeight;
@@ -32,6 +32,10 @@ public class Region extends JPanel {
 		zonesCosts.put('D', 200);
 		zonesCosts.put('.', 1);
 		zonesCosts.put('G', 5);
+		zonesCosts.put('I', 0);
+		zonesCosts.put('F', 0);
+		zonesCosts.put('C', 0);
+		
 		
 		// Remember that it follows order (i.e., index 0 is the exact first entry, 1 is second and so on...)
 		// It's also the order of the wolf zones by encounter
@@ -61,6 +65,8 @@ public class Region extends JPanel {
 				
 				zone[i][j] = new Zone();
 				zone[i][j].setType(line[j]);
+				zone[i][j].setI(i);
+				zone[i][j].setJ(j);
 				
 				if(line[j] == 'I') {
 					
@@ -139,5 +145,21 @@ public class Region extends JPanel {
 				}
 			}
 		}
+	
+	
 	}
+
+	
+	public static Map<Character, Integer> getZonesCosts() {
+		
+		return zonesCosts;		
+	}
+		
+	public static Zone[][] getZones() {	
+
+		return zone;
+	}
+
+	
+	
 }
