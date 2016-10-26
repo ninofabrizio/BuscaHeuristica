@@ -18,8 +18,10 @@ import static java.lang.Math.abs;
 
 import java.util.Comparator;
 
+import javax.swing.SwingUtilities;
 
-public class LittleRedRidingHood {
+
+public class LittleRedRidingHood extends Thread {
 
 	private static LittleRedRidingHood lrrh = null;
 	private Region region;
@@ -274,6 +276,8 @@ public class LittleRedRidingHood {
 		frontier.add(start);		
 		cost_so_far.add(start);
 			
+		//region.paintNow(lrrh);
+		
 		while ( frontier.size() != 0 ) {
 			
 			frontier.sort(new Comparator<Zone>() {
@@ -297,7 +301,7 @@ public class LittleRedRidingHood {
 				current = frontier.poll();
 				
 				if (current.getParent() != null ) {
-					if( current.getLittleRed() != null ){
+					
 						if ( (current.i == current.getParent().i) && ( (current.j == current.getParent().j - 1) 
 								|| ( current.j == current.getParent().j + 1 )) ) 	
 							break;
@@ -305,7 +309,7 @@ public class LittleRedRidingHood {
 						if ( (current.j == current.getParent().j) && ((current.i == current.getParent().i - 1) 
 								|| ( current.i == current.getParent().i + 1 )) ) 	
 							break;	
-					}
+					
 				} else break;
 						
 			} 
@@ -313,28 +317,45 @@ public class LittleRedRidingHood {
 			System.out.println("\n\n: Frontier " + frontier.size());
 			
 			System.out.println("\nCurrent Position " + current.getType() + "  "+ current.i + "   " + current.j);
+			System.out.println("Has Little Red: " + (current.getLittleRed() != null));
 					
 			if ( current  == end ) {
+				System.out.println("\nPath time " + current.finalCost);
 				System.out.println("\nTOTAL TIME " + (current.finalCost + totalTime));
 				break;
 			}
 			
 			
 			neighbors = neighbors(current);
-						
+			Zone lastChosen = null;
+			
 			for (Zone next : neighbors) {
 						
 				double new_cost = cost_so_far.get(cost_so_far.indexOf(current)).getCost() + mapCosts.get(next.getType());
 						
 				
-				if ( !cost_so_far.contains(next) || new_cost <  cost_so_far.get(cost_so_far.lastIndexOf(next)).getCost() ) {
+				if ( !cost_so_far.contains(next) || new_cost < cost_so_far.get(cost_so_far.lastIndexOf(next)).getCost()) {
 					
 					double priority = new_cost + heuristic(next);
 					
-
-					next.setLittleRed(current.getLittleRed());
-					current.setLittleRed(null);	
+					if(lastChosen == null && current.getLittleRed() != null) {
+						next.setLittleRed(current.getLittleRed());
+						current.setLittleRed(null);
+						lastChosen = next;
+					}
+					else if(lastChosen != null && lastChosen.getLittleRed() != null) {
+						next.setLittleRed(lastChosen.getLittleRed());
+						
+						// TODO Change the line above with the one above it and see some crazy stuff
+						current.setLittleRed(null);
+						//lastChosen.setLittleRed(null);
+						
+						lastChosen = next;
+					}
+					
 					region.repaint();
+					
+
 					
 					next.setCost(new_cost);
 					cost_so_far.add(next);
@@ -345,6 +366,15 @@ public class LittleRedRidingHood {
 					
 				}					
 			}
+		}
+	}
+
+	public void goToSleep() {
+		
+		try {
+			sleep(5000);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
 		}
 	}
 }

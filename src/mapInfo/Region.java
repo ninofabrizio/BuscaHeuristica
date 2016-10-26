@@ -11,6 +11,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import javax.swing.JPanel;
+import javax.swing.SwingUtilities;
 
 public class Region extends JPanel {
 
@@ -115,7 +116,7 @@ public class Region extends JPanel {
 					g2d.setPaint(Color.GREEN);
 					g2d.fill(rt);
 				}
-				else if(zone[i][j].getType() == '.') {
+				else if(zone[i][j].getType() == '.' || zone[i][j].getType() == 'I') {
 					
 					rt = new Rectangle2D.Double(xPos, yPos, zoneWidth, zoneHeight);
 					g2d.setPaint(Color.WHITE);
@@ -139,7 +140,13 @@ public class Region extends JPanel {
 					g2d.setPaint(Color.BLUE);
 					g2d.fill(rt);
 				}
-				if(zone[i][j].getLittleRed() != null) {
+				if(zone[i][j].getLittleRed() != null && zone[i][j].getType() != 'F' && zone[i][j].getType() != 'I') {
+					
+					rt = new Rectangle2D.Double(xPos, yPos, zoneWidth, zoneHeight);
+					g2d.setPaint(Color.BLUE);
+					g2d.fill(rt);
+				}
+				else if(zone[i][j].getLittleRed() != null) {
 					
 					rt = new Rectangle2D.Double(xPos, yPos, zoneWidth, zoneHeight);
 					g2d.setPaint(Color.RED);
@@ -165,5 +172,20 @@ public class Region extends JPanel {
 	public void activateAStar() {
 		
 		littleRedZone.getLittleRed().AStar();
+	}
+
+	public void paintNow(LittleRedRidingHood lil) {
+		
+		SwingUtilities.invokeLater(new Runnable() {
+		    public void run() {
+		    	boolean painting = true;
+		        while(true) {
+		            // Do your processing
+		        	//lil.goToSleep();
+		            repaint();
+		            painting = false;
+		        }
+		    }
+		});
 	}
 }
