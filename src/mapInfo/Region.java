@@ -15,6 +15,8 @@ import javax.swing.SwingUtilities;
 
 public class Region extends JPanel {
 
+	private Graphics g = null;
+	
 	private static Zone zone[][] = new Zone[41][41];
 	public Zone littleRedZone;
 	
@@ -100,6 +102,7 @@ public class Region extends JPanel {
 	public void paintComponent(Graphics g) {
 		
 		super.paintComponent(g);
+		this.g = g;
 		Graphics2D g2d = (Graphics2D) g;
 		Rectangle2D rt;
 		
@@ -154,8 +157,6 @@ public class Region extends JPanel {
 				}
 			}
 		}
-	
-	
 	}
 
 	
@@ -172,20 +173,5 @@ public class Region extends JPanel {
 	public void activateAStar() {
 		
 		littleRedZone.getLittleRed().AStar();
-	}
-
-	public void paintNow(LittleRedRidingHood lil) {
-		
-		SwingUtilities.invokeLater(new Runnable() {
-		    public void run() {
-		    	boolean painting = true;
-		        while(true) {
-		            // Do your processing
-		        	//lil.goToSleep();
-		            repaint();
-		            painting = false;
-		        }
-		    }
-		});
 	}
 }

@@ -19,3 +19,8 @@ Extra:
 - Calcular e mostrar (talvez dentro do próprio painel 
   dizendo tempo total e doces disponíveis?) o tempo que
   o algoritmo de busca leva ao executar
+  
+  
+SOBRE O ASTAR:
+Fazer: mostrar a personagem se movendo "normalmente"  
+Desejável: ver melhor como separar o caminho final das tentativas abandonadas

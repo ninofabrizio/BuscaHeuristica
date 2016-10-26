@@ -275,8 +275,6 @@ public class LittleRedRidingHood extends Thread {
 		
 		frontier.add(start);		
 		cost_so_far.add(start);
-			
-		//region.paintNow(lrrh);
 		
 		while ( frontier.size() != 0 ) {
 			
@@ -315,7 +313,6 @@ public class LittleRedRidingHood extends Thread {
 			} 
 			
 			System.out.println("\n\n: Frontier " + frontier.size());
-			
 			System.out.println("\nCurrent Position " + current.getType() + "  "+ current.i + "   " + current.j);
 			System.out.println("Has Little Red: " + (current.getLittleRed() != null));
 					
@@ -325,15 +322,13 @@ public class LittleRedRidingHood extends Thread {
 				break;
 			}
 			
-			
 			neighbors = neighbors(current);
 			Zone lastChosen = null;
 			
 			for (Zone next : neighbors) {
 						
 				double new_cost = cost_so_far.get(cost_so_far.indexOf(current)).getCost() + mapCosts.get(next.getType());
-						
-				
+							
 				if ( !cost_so_far.contains(next) || new_cost < cost_so_far.get(cost_so_far.lastIndexOf(next)).getCost()) {
 					
 					double priority = new_cost + heuristic(next);
@@ -347,15 +342,14 @@ public class LittleRedRidingHood extends Thread {
 						next.setLittleRed(lastChosen.getLittleRed());
 						
 						// TODO Change the line above with the one above it and see some crazy stuff
+						// Obs.: These lines might hold the secret on how to show our character...
 						current.setLittleRed(null);
 						//lastChosen.setLittleRed(null);
 						
 						lastChosen = next;
 					}
 					
-					region.repaint();
-					
-
+					//region.repaint();
 					
 					next.setCost(new_cost);
 					cost_so_far.add(next);
@@ -364,17 +358,16 @@ public class LittleRedRidingHood extends Thread {
 					
 					frontier.add(next);
 					
+					// Change the value below for different speeds (lower == faster)
+					try {
+						Thread.sleep(60);
+					} catch(InterruptedException ex) {
+						Thread.currentThread().interrupt();
+					}
 				}					
 			}
-		}
-	}
-
-	public void goToSleep() {
-		
-		try {
-			sleep(5000);
-		} catch (InterruptedException e) {
-			e.printStackTrace();
+			
+			region.repaint();
 		}
 	}
 }
