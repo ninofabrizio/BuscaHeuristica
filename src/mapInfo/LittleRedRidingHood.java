@@ -129,7 +129,7 @@ public class LittleRedRidingHood {
 			zoneDifficulty = Region.getWolfZoneDifficulty(wolfZonesWalked);
 			goal = (zoneDifficulty * (0.4 - ((double)wolfZonesWalked * 0.01)));
 			
-	        CandyCombinations combs = new CandyCombinations(50, true);
+	        CandyCombinations combs = new CandyCombinations(500, true);
 			
 			Iterator<Entry<String, Integer>> cqIterator = candyQuantity.entrySet().iterator();
 			
@@ -202,7 +202,7 @@ public class LittleRedRidingHood {
 		
 		wolfZonesWalked = 0;
 		
-		AStar();
+		//AStar();
 	}
     	
 
@@ -297,15 +297,15 @@ public class LittleRedRidingHood {
 				current = frontier.poll();
 				
 				if (current.getParent() != null ) {
+					if( current.getLittleRed() != null ){
+						if ( (current.i == current.getParent().i) && ( (current.j == current.getParent().j - 1) 
+								|| ( current.j == current.getParent().j + 1 )) ) 	
+							break;
 				
-				if ( (current.i == current.getParent().i) && ( (current.j == current.getParent().j - 1) 
-				|| ( current.j == current.getParent().j + 1 )) ) 	
-					break;
-				
-				if ( (current.j == current.getParent().j) && ((current.i == current.getParent().i - 1) 
-				|| ( current.i == current.getParent().i + 1 )) ) 	
-					break;	
-				
+						if ( (current.j == current.getParent().j) && ((current.i == current.getParent().i - 1) 
+								|| ( current.i == current.getParent().i + 1 )) ) 	
+							break;	
+					}
 				} else break;
 						
 			} 
@@ -326,19 +326,20 @@ public class LittleRedRidingHood {
 						
 				double new_cost = cost_so_far.get(cost_so_far.indexOf(current)).getCost() + mapCosts.get(next.getType());
 						
+				
 				if ( !cost_so_far.contains(next) || new_cost <  cost_so_far.get(cost_so_far.lastIndexOf(next)).getCost() ) {
 					
 					double priority = new_cost + heuristic(next);
+					
+
+					next.setLittleRed(current.getLittleRed());
+					current.setLittleRed(null);	
+					region.repaint();
 					
 					next.setCost(new_cost);
 					cost_so_far.add(next);
 					next.setFinalCost(priority);
 					next.setParent(current);
-			
-					next.setLittleRed(current.getLittleRed());
-					current.setLittleRed(null);	
-					region.repaint();
-					
 					
 					frontier.add(next);
 					

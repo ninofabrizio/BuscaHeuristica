@@ -196,7 +196,8 @@ public class windowMaker extends JFrame {
 		startWalk.addActionListener(new ActionListener() {
 			
 			public void actionPerformed(ActionEvent e) { 
-				//region.activateAStar();
+				startWalk.setEnabled(false);
+				region.activateAStar();
 			}
 		});
 		
@@ -211,6 +212,6 @@ public class windowMaker extends JFrame {
 		getContentPane().add(infoPanel);
 		getContentPane().add(region);
 		
-		setVisible(false);
+		setVisible(true);
 	}
 }

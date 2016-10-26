@@ -162,8 +162,8 @@ public class Region extends JPanel {
 		return zone;
 	}
 
-	/*public void activateAStar() {
+	public void activateAStar() {
 		
 		littleRedZone.getLittleRed().AStar();
-	}*/
+	}
 }
