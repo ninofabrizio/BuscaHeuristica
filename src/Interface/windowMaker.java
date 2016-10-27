@@ -197,13 +197,14 @@ public class windowMaker extends JFrame {
 			
 			public void actionPerformed(ActionEvent e) { 
 				
-	    		new Thread("FindPath") {
+	    		Thread t = new Thread("FindPath") {
 	                @Override
 	                public void run() {
 	                	region.activateAStar();
 	                	startWalk.setEnabled(false);
 	                }
-	    		}.start();
+	    		};
+	    		t.start();
 			}
 		});
 		
