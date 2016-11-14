@@ -8,6 +8,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.swing.JPanel;
@@ -68,8 +69,8 @@ public class Region extends JPanel {
 				
 				zone[i][j] = new Zone();
 				zone[i][j].setType(line[j]);
-				zone[i][j].setI(i);
-				zone[i][j].setJ(j);
+				zone[i][j].x = i;
+				zone[i][j].y = j;
 				
 				if(line[j] == 'I') {
 					
@@ -155,6 +156,15 @@ public class Region extends JPanel {
 					g2d.setPaint(Color.RED);
 					g2d.fill(rt);
 				}
+			
+				if(zone[i][j].isPath()){
+					
+					rt = new Rectangle2D.Double(xPos, yPos, zoneWidth, zoneHeight);
+					g2d.setPaint(Color.BLACK);
+					g2d.fill(rt);				
+					
+				}
+								
 			}
 		}
 	}
@@ -172,6 +182,23 @@ public class Region extends JPanel {
 
 	public void activateAStar() {
 		
-		littleRedZone.getLittleRed().AStar();
+		List<Zone>nodes = littleRedZone.getLittleRed().aStar();
+		System.out.println("aqui");
+		int i = 0;
+		
+		while( i < nodes.size() ) {
+			
+			Zone x = nodes.remove(i);
+			
+			System.out.println("\nNo..I= " + x.x + "   J=.." + x.y);
+			
+			i++;
+			
+		}
+		
+		
+		
+		
+		
 	}
 }

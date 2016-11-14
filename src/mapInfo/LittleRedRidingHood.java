@@ -5,12 +5,15 @@ import genetic.GeneticAlgorithm;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.PriorityQueue;
 import java.util.Queue;
+import java.util.Set;
 import java.util.concurrent.PriorityBlockingQueue;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -204,170 +207,149 @@ public class LittleRedRidingHood extends Thread {
 		
 		wolfZonesWalked = 0;
 		
-		//AStar();
 	}
     	
 
 	
 /////////////////////////////////////////////////////// ASTAR ///////////////////////////////////////////////////////////////
 	
-	
-    public void setStartAndEndCell() {
-      
-    	for ( int i = 0; i < 41; ++i )     
-    		for ( int j = 0; j < 41; ++j ) {
-    	      
-    	    	if ( grid[i][j].getType() == 'I' ) {    
-    	    		startI = i;
-    	            startJ = j;    	
-    	    	}
-    			
-    	    	if ( grid[i][j].getType() == 'F' ) {
-    				endI = i;
-    				endJ = j;
-    			}     
-    	     
-    	    	if ( startI != -1 && endI != -1) break;	
-    	    }
-    }
-    
-    public double heuristic( Zone x ) {
-    	
-    	return abs( x.getI() - endI ) + abs( x.getJ() - endJ );  	    	
-    }
+	public int estimateDistance(Zone z1, Zone z2) {
+	    return Math.abs(z1.x - z2.x) + Math.abs(z1.y - z2.y);
+	}
     
     
     
-    public ArrayList<Zone> neighbors( Zone x ) {
+    public ArrayList<Zone>neighbors( Zone x ) {
     	
     	ArrayList<Zone>neighbors = new ArrayList<Zone>();
     
-    	if (x.getJ() + 1 < 41)
-    		neighbors.add(grid[x.getI()][x.getJ() + 1]);
+    	if (x.y + 1 < 41)
+    		neighbors.add(grid[x.x][x.y + 1]);
     	
-    	if (x.getJ() - 1 > -1)
-    		neighbors.add(grid[x.getI()][x.getJ() - 1]);
+    	if (x.y - 1 > -1)
+    		neighbors.add(grid[x.x][x.y - 1]);
     	
-    	if (x.getI() + 1 < 41)
-    		neighbors.add(grid[x.getI()  + 1][x.getJ()]);
+    	if (x.x + 1 < 41)
+    		neighbors.add(grid[x.x  + 1][x.y]);
     	
-    	if (x.getI() - 1 > -1)
-    		neighbors.add(grid[x.getI() - 1][x.getJ()]);
-    	
-    	
+    	if (x.x - 1 > -1)
+    		neighbors.add(grid[x.x - 1][x.y]);
+    	  	
     	return neighbors;   	
     }
      
     
-	public void AStar() {
+    public List<Zone> aStar() {
+  	  
+    	Zone start = grid[36][4];
+		Zone goal = grid[36][36];
 		
-		setStartAndEndCell();
-		
-		Zone start = grid[startI][startJ];
-		Zone end = grid[endI][endJ];
-		
-		Zone current = null;
-		ArrayList<Zone>neighbors;
-		
-		start.setCost(0);
-		start.setFinalCost(heuristic(start));
-		start.setParent(null);
-		
-		frontier.add(start);		
-		cost_so_far.add(start);
-		
-		while ( frontier.size() != 0 ) {
-			
-			frontier.sort(new Comparator<Zone>() {
-				   
-				@Override
-				   public int compare(Zone o1, Zone o2) {
-			        
-					if(o1.finalCost < o2.finalCost){
-			           return -1; 
-				        }
-				        if(o1.finalCost > o2.finalCost){
-				           return 1; 
-				        }
-			        return 0;
-				   }
-				}); 
-				
-			
-			while ( true ) {
-				
-				current = frontier.poll();
-				
-				if (current.getParent() != null ) {
-					
-						if ( (current.i == current.getParent().i) && ( (current.j == current.getParent().j - 1) 
-								|| ( current.j == current.getParent().j + 1 )) ) 	
-							break;
-				
-						if ( (current.j == current.getParent().j) && ((current.i == current.getParent().i - 1) 
-								|| ( current.i == current.getParent().i + 1 )) ) 	
-							break;	
-					
-				} else break;
-						
-			} 
-			
-			System.out.println("\n\n: Frontier " + frontier.size());
-			System.out.println("\nCurrent Position " + current.getType() + "  "+ current.i + "   " + current.j);
-			System.out.println("Has Little Red: " + (current.getLittleRed() != null));
-					
-			if ( current  == end ) {
-				System.out.println("\nPath time " + current.finalCost);
-				System.out.println("\nTOTAL TIME " + (current.finalCost + totalTime));
-				break;
-			}
-			
-			neighbors = neighbors(current);
-			Zone lastChosen = null;
-			
-			for (Zone next : neighbors) {
-						
-				double new_cost = cost_so_far.get(cost_so_far.indexOf(current)).getCost() + mapCosts.get(next.getType());
-							
-				if ( !cost_so_far.contains(next) || new_cost < cost_so_far.get(cost_so_far.lastIndexOf(next)).getCost()) {
-					
-					double priority = new_cost + heuristic(next);
-					
-					if(lastChosen == null && current.getLittleRed() != null) {
-						next.setLittleRed(current.getLittleRed());
-						current.setLittleRed(null);
-						lastChosen = next;
-					}
-					else if(lastChosen != null && lastChosen.getLittleRed() != null) {
-						next.setLittleRed(lastChosen.getLittleRed());
-						
-						// TODO Change the line above with the one above it and see some crazy stuff
-						// Obs.: These lines might hold the secret on how to show our character...
-						current.setLittleRed(null);
-						//lastChosen.setLittleRed(null);
-						
-						lastChosen = next;
-					}
-					
-					//region.repaint();
-					
-					next.setCost(new_cost);
-					cost_so_far.add(next);
-					next.setFinalCost(priority);
-					next.setParent(current);
-					
-					frontier.add(next);
-					
-					// Change the value below for different speeds (lower == faster)
-					try {
-						Thread.sleep(60);
-					} catch(InterruptedException ex) {
-						Thread.currentThread().interrupt();
-					}
-				}					
-			}
-			
-			region.repaint();
-		}
-	}
+    	Set<Zone> open = new HashSet<Zone>();
+    	Set<Zone> closed = new HashSet<Zone>();
+
+    	start.g = 0;
+    	start.h = estimateDistance(start, goal);
+    	start.f = start.h;
+
+    	open.add(start);
+
+    	while (true) {
+    	        
+    		Zone current = null;
+
+    	    
+    		if (open.size() == 0) {
+    	    	throw new RuntimeException("no route");
+    	    }
+
+    	    
+    	    for (Zone node : open) {
+    	    	
+    	    	if (current == null || node.f < current.f) {
+    	    		
+    	    		current = node;
+    	        }
+    	    }
+
+    	    
+    	    if (current == goal) {
+    	            break;
+    	    }
+
+    	    open.remove(current);
+    	    closed.add(current);
+
+    	    current.neighbors = neighbors(current);
+    	    
+    	    for (Zone neighbor : current.neighbors) {
+    	    	
+    	    	if (neighbor == null) {
+    	    		continue;
+    	        }
+
+    	        double nextG = current.g + getCost(grid[neighbor.x][neighbor.y].getType());
+
+    	        if (nextG < neighbor.g) {
+    	               
+    	        	open.remove(neighbor);
+    	            closed.remove(neighbor);
+    	        }
+
+    	        if (!open.contains(neighbor) && !closed.contains(neighbor)) {
+    	        	
+    	        	neighbor.g = nextG;
+    	            neighbor.h = estimateDistance(neighbor, goal);
+    	            neighbor.f = neighbor.g + neighbor.h;
+    	            neighbor.parent = current;
+    	            open.add(neighbor);
+    	            
+    	        }        
+    	    }
+    	
+    	
+    	}
+
+    	    
+    	List<Zone> nodes = new ArrayList<Zone>();
+    	Zone current = goal;
+    	    
+    	while (current.parent != null) {
+    		nodes.add(current);
+    	    current = current.parent;  	    
+    	}
+    	
+    	nodes.add(start);
+
+    	return nodes;
+
+    }
+
+    
+    double getCost(char c) {
+    	
+    	if ( c == 'D') return 200.0;
+    	
+    	else if ( c == '.') return 1.0;
+    	
+    	else if ( c == 'G') return 5.0;
+    	 		
+    	else return 0.0; 
+    	
+    	
+    }
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+	
 }
