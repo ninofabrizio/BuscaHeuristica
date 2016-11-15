@@ -183,22 +183,18 @@ public class Region extends JPanel {
 	public void activateAStar() {
 		
 		List<Zone>nodes = littleRedZone.getLittleRed().aStar();
-		System.out.println("aqui");
 		int i = 0;
+		Zone x = null;
 		
 		while( i < nodes.size() ) {
 			
-			Zone x = nodes.remove(i);
-			
-			System.out.println("\nNo..I= " + x.x + "   J=.." + x.y);
+			x = nodes.remove(i);
+			//System.out.println("\nNo..I= " + x.x + "   J=.." + x.y);
 			
 			i++;
 			
 		}
 		
-		
-		
-		
-		
+		//System.out.println("Final cost:" + x.cost);
 	}
 }

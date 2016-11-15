@@ -197,7 +197,7 @@ public class windowMaker extends JFrame {
 			
 			public void actionPerformed(ActionEvent e) { 
 				
-	    		Thread t = new Thread("FindPath") {
+	    		Thread t = new Thread() {
 	                @Override
 	                public void run() {
 	                	region.activateAStar();

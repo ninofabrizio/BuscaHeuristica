@@ -270,7 +270,6 @@ public class LittleRedRidingHood extends Thread {
     	    		current = node;
     	        }
     	    }
-
     	    
     	    if (current == goal) {
     	            break;
@@ -305,16 +304,32 @@ public class LittleRedRidingHood extends Thread {
     	            
     	        }        
     	    }
-    	
-    	
+    	    
+    	   
     	}
 
     	    
     	List<Zone> nodes = new ArrayList<Zone>();
     	Zone current = goal;
+    	int i = 0;
     	    
     	while (current.parent != null) {
     		nodes.add(current);
+    		
+    		nodes.get(i).isPath = true;
+    		
+    		region.repaint();
+     	    
+     	    try {
+ 				sleep(30);
+ 			} catch (InterruptedException e) {
+ 				e.printStackTrace();
+ 			}
+    		
+     	    if(i == 0)
+     	    	System.out.println("Final Cost: " + nodes.get(i).f);
+     	    i++;
+     	    
     	    current = current.parent;  	    
     	}
     	
